@@ -51,6 +51,8 @@ public class ScanFileCommand implements Command {
     
     private Usage help;
     private List<String> arguments;
+    private VictimsDBInterface db;
+    private VictimsResultCache cache;
 
     public ScanFileCommand() {
         help = new Usage(getName(), "Scans the supplied .jar file and reports any vulnerabilities");
@@ -91,13 +93,13 @@ public class ScanFileCommand implements Command {
             return new ExitInvalid("file or directory expected");
         }
 
-        VictimsDBInterface db;
-        VictimsResultCache cache;
-
         try {
-            db = VictimsDB.db();
-            cache = new VictimsResultCache();
-
+            if (db == null) {
+                db = VictimsDB.db();
+            }
+            if (cache == null) {
+                cache = new VictimsResultCache();
+            }
         } catch (VictimsException e) {
             //e.printStackTrace();
             return new ExitFailure(e.getMessage());
